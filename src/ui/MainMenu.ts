@@ -139,7 +139,7 @@ export class MainMenu {
     this.charTagline = new TextField(el('div', 'select-info-tagline', '', charInfo));
     const charActions = el('div', 'actions', undefined, charFoot);
     charActions.appendChild(button('← 返回', 'ghost', () => this.goTo('title', true)));
-    charActions.appendChild(button('继续 →', 'primary', () => this.goTo('trackSelect', true)));
+    charActions.appendChild(button('继续 →', 'primary start', () => this.goTo('trackSelect', true)));
     // Mobile: left/right arrow buttons to step between racers.
     chars.appendChild(button('‹', 'char-nav char-nav-prev', () => this.stepCharacter(-1)));
     chars.appendChild(button('›', 'char-nav char-nav-next', () => this.stepCharacter(1)));
@@ -368,12 +368,14 @@ export class MainMenu {
     this.charGrid.scrollTo({ left: target, behavior: 'smooth' });
     window.clearTimeout(this.charSyncReset);
     this.charSyncReset = window.setTimeout(() => {
-      this.charGrid.style.scrollSnapType = 'x mandatory';
+      // Pin scrollLeft precisely to the target, then re-enable CSS snapping.
+      // Do NOT re-derive the index from scroll position here: the arrow target
+      // is authoritative, so a mid-animation reading can't jump to a wrong card.
       if (Math.abs(this.charGrid.scrollLeft - target) > 1) {
-        this.charGrid.scrollTo({ left: target, behavior: 'auto' });
+        this.charGrid.scrollLeft = target;
       }
+      this.charGrid.style.scrollSnapType = 'x mandatory';
       this.suppressCharSync = false;
-      this.syncCharFromScroll();
     }, 600);
   }
 
@@ -422,12 +424,14 @@ export class MainMenu {
     this.trackGrid.scrollTo({ left: target, behavior: 'smooth' });
     window.clearTimeout(this.trackSyncReset);
     this.trackSyncReset = window.setTimeout(() => {
-      this.trackGrid.style.scrollSnapType = 'x mandatory';
+      // Pin scrollLeft precisely to the target, then re-enable CSS snapping.
+      // Do NOT re-derive the index from scroll position here: the arrow target
+      // is authoritative, so a mid-animation reading can't jump to a wrong card.
       if (Math.abs(this.trackGrid.scrollLeft - target) > 1) {
-        this.trackGrid.scrollTo({ left: target, behavior: 'auto' });
+        this.trackGrid.scrollLeft = target;
       }
+      this.trackGrid.style.scrollSnapType = 'x mandatory';
       this.suppressTrackSync = false;
-      this.syncTrackFromScroll();
     }, 600);
   }
 
