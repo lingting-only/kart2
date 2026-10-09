@@ -359,17 +359,16 @@ export class MainMenu {
     const next = (this.charIndex + dir + n) % n;
     this.setCharacter(next, true);
     this.suppressCharSync = true;
-    const card = this.charCards[next];
-    const gridRect = this.charGrid.getBoundingClientRect();
-    const cardRect = card.getBoundingClientRect();
-    const target = this.charGrid.scrollLeft + (cardRect.left - gridRect.left) - (gridRect.width - cardRect.width) / 2;
-    // Instant positioning so the adjacent card is selected deterministically
-    // (no CSS scroll-snap or smooth animation to fight with).
+    // Compute scroll target from index and measured card width (each card is
+    // flex:0 0 100% so cardWidth ≈ clientWidth; gap:12px from CSS).
+    const cardW = this.charGrid.clientWidth;
+    const gap = 12;
+    const target = next * (cardW + gap);
     this.charGrid.scrollLeft = target;
-    window.cancelAnimationFrame(this.charSyncReset);
-    this.charSyncReset = window.requestAnimationFrame(() => {
+    window.clearTimeout(this.charSyncReset);
+    this.charSyncReset = window.setTimeout(() => {
       this.suppressCharSync = false;
-    });
+    }, 150);
   }
 
   private setTrack(i: number, sound = false): void {
@@ -408,17 +407,16 @@ export class MainMenu {
     this.trackRow = 0;
     this.setTrack(next, true);
     this.suppressTrackSync = true;
-    const card = this.trackCards[next];
-    const gridRect = this.trackGrid.getBoundingClientRect();
-    const cardRect = card.getBoundingClientRect();
-    const target = this.trackGrid.scrollLeft + (cardRect.left - gridRect.left) - (gridRect.width - cardRect.width) / 2;
-    // Instant positioning so the adjacent card is selected deterministically
-    // (no CSS scroll-snap or smooth animation to fight with).
+    // Compute scroll target from index and measured card width (each card is
+    // flex:0 0 100% so cardWidth ≈ clientWidth; gap:12px from CSS).
+    const cardW = this.trackGrid.clientWidth;
+    const gap = 12;
+    const target = next * (cardW + gap);
     this.trackGrid.scrollLeft = target;
-    window.cancelAnimationFrame(this.trackSyncReset);
-    this.trackSyncReset = window.requestAnimationFrame(() => {
+    window.clearTimeout(this.trackSyncReset);
+    this.trackSyncReset = window.setTimeout(() => {
       this.suppressTrackSync = false;
-    });
+    }, 150);
   }
 
   private setDifficulty(i: number, sound = false): void {
