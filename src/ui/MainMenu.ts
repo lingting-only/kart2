@@ -363,20 +363,13 @@ export class MainMenu {
     const gridRect = this.charGrid.getBoundingClientRect();
     const cardRect = card.getBoundingClientRect();
     const target = this.charGrid.scrollLeft + (cardRect.left - gridRect.left) - (gridRect.width - cardRect.width) / 2;
-    // Disable snap while scrolling so the programmatic scroll lands exactly on the target.
-    this.charGrid.style.scrollSnapType = 'none';
-    this.charGrid.scrollTo({ left: target, behavior: 'smooth' });
-    window.clearTimeout(this.charSyncReset);
-    this.charSyncReset = window.setTimeout(() => {
-      // Pin scrollLeft precisely to the target, then re-enable CSS snapping.
-      // Do NOT re-derive the index from scroll position here: the arrow target
-      // is authoritative, so a mid-animation reading can't jump to a wrong card.
-      if (Math.abs(this.charGrid.scrollLeft - target) > 1) {
-        this.charGrid.scrollLeft = target;
-      }
-      this.charGrid.style.scrollSnapType = 'x mandatory';
+    // Instant positioning so the adjacent card is selected deterministically
+    // (no CSS scroll-snap or smooth animation to fight with).
+    this.charGrid.scrollLeft = target;
+    window.cancelAnimationFrame(this.charSyncReset);
+    this.charSyncReset = window.requestAnimationFrame(() => {
       this.suppressCharSync = false;
-    }, 600);
+    });
   }
 
   private setTrack(i: number, sound = false): void {
@@ -419,20 +412,13 @@ export class MainMenu {
     const gridRect = this.trackGrid.getBoundingClientRect();
     const cardRect = card.getBoundingClientRect();
     const target = this.trackGrid.scrollLeft + (cardRect.left - gridRect.left) - (gridRect.width - cardRect.width) / 2;
-    // Disable snap while scrolling so the programmatic scroll lands exactly on the target.
-    this.trackGrid.style.scrollSnapType = 'none';
-    this.trackGrid.scrollTo({ left: target, behavior: 'smooth' });
-    window.clearTimeout(this.trackSyncReset);
-    this.trackSyncReset = window.setTimeout(() => {
-      // Pin scrollLeft precisely to the target, then re-enable CSS snapping.
-      // Do NOT re-derive the index from scroll position here: the arrow target
-      // is authoritative, so a mid-animation reading can't jump to a wrong card.
-      if (Math.abs(this.trackGrid.scrollLeft - target) > 1) {
-        this.trackGrid.scrollLeft = target;
-      }
-      this.trackGrid.style.scrollSnapType = 'x mandatory';
+    // Instant positioning so the adjacent card is selected deterministically
+    // (no CSS scroll-snap or smooth animation to fight with).
+    this.trackGrid.scrollLeft = target;
+    window.cancelAnimationFrame(this.trackSyncReset);
+    this.trackSyncReset = window.requestAnimationFrame(() => {
       this.suppressTrackSync = false;
-    }, 600);
+    });
   }
 
   private setDifficulty(i: number, sound = false): void {

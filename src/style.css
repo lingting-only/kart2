@@ -2285,7 +2285,6 @@ body {
   overflow-y: hidden;
   gap: 12px;
   padding: 6px 0;
-  scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   min-height: 0;
@@ -2297,8 +2296,6 @@ body {
 
 .touch .char-grid > .char-card {
   flex: 0 0 100%;
-  scroll-snap-align: center;
-  scroll-snap-stop: always;
 }
 
 /* Single racer card laid out horizontally: portrait left, info right. */
@@ -2415,7 +2412,6 @@ body {
   overflow-y: hidden;
   gap: 12px;
   padding: 6px 0;
-  scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
@@ -2426,8 +2422,6 @@ body {
 
 .touch .track-grid > .track-card {
   flex: 0 0 100%;
-  scroll-snap-align: center;
-  scroll-snap-stop: always;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -2490,31 +2484,34 @@ body {
    landscape, so compress the podium panel vertically to keep title, standings
    and action buttons all on screen. */
 .touch .results-panel {
-  padding: 12px 16px;
+  width: min(94vw, 880px);
+  max-width: min(94vw, 880px);
+  padding: 10px 16px;
 }
 
 .touch .results-title {
-  font-size: clamp(26px, 6.5vh, 48px);
+  font-size: clamp(24px, 6vh, 42px);
 }
 
 .touch .results-sub {
   font-size: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .touch .standings {
-  max-height: 36vh;
-  gap: 4px;
+  max-height: 28vh;
+  gap: 3px;
 }
 
 .touch .standing-row {
-  grid-template-columns: 44px 12px 1fr auto;
+  grid-template-columns: 60px 14px 1fr auto;
   gap: 8px;
-  padding: 5px 10px;
+  padding: 4px 10px;
 }
 
 .touch .standing-place {
-  font-size: 17px;
+  font-size: 16px;
+  white-space: nowrap;
 }
 
 .touch .standing-chip {
@@ -2525,6 +2522,7 @@ body {
 
 .touch .standing-name {
   font-size: 15px;
+  white-space: nowrap;
 }
 
 .touch .standing-time {
@@ -2532,12 +2530,13 @@ body {
 }
 
 .touch .results-panel .actions {
-  margin-top: 12px;
+  margin-top: 10px;
   gap: 8px;
+  flex-wrap: nowrap;
 }
 
 .touch .results-panel .btn {
-  padding: 10px 18px;
+  padding: 10px 16px;
   font-size: 14px;
 }
 
