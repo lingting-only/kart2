@@ -110,6 +110,7 @@ export class MainMenu {
     const charHead = el('header', 'select-header', undefined, chars);
     el('div', 'panel-kicker', '第 1 / 2 步', charHead);
     el('h2', 'panel-title', '选择你的车手', charHead);
+    this.charCount = new TextField(el('div', 'select-count', '', charHead));
     this.charGrid = el('div', 'card-grid char-grid', undefined, chars);
     characters.forEach((c, i) => {
       const card = this.buildCharacterCard(c);
@@ -132,7 +133,6 @@ export class MainMenu {
       },
       { passive: true },
     );
-    this.charCount = new TextField(el('div', 'select-count', '', chars));
     const charFoot = el('footer', 'select-footer glass', undefined, chars);
     const charInfo = el('div', 'select-info', undefined, charFoot);
     this.charName = new TextField(el('div', 'select-info-name', '', charInfo));
@@ -149,6 +149,7 @@ export class MainMenu {
     const trHead = el('header', 'select-header', undefined, tr);
     el('div', 'panel-kicker', '第 2 / 2 步', trHead);
     el('h2', 'panel-title', '选择赛道', trHead);
+    this.trackCount = new TextField(el('div', 'select-count', '', trHead));
     this.trackGrid = el('div', 'card-grid track-grid', undefined, tr);
     tracks.forEach((t, i) => {
       const card = this.buildTrackCard(t);
@@ -176,7 +177,6 @@ export class MainMenu {
       },
       { passive: true },
     );
-    this.trackCount = new TextField(el('div', 'select-count', '', tr));
     // Mobile: left/right arrow buttons to step between tracks.
     tr.appendChild(button('‹', 'char-nav char-nav-prev', () => this.stepTrack(-1)));
     tr.appendChild(button('›', 'char-nav char-nav-next', () => this.stepTrack(1)));

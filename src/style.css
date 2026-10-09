@@ -2243,6 +2243,25 @@ body {
   align-items: center;
 }
 
+/* Header becomes a two-row flex: the kicker stays on its own line while the
+   title and the "index / total" counter share a single row. */
+.touch .select-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 14px;
+  row-gap: 2px;
+}
+
+.touch .select-header .panel-kicker {
+  flex: 0 0 100%;
+}
+
+.touch .select-header .panel-title {
+  margin: 0;
+}
+
 .touch .select-count {
   display: block;
   align-self: center;
