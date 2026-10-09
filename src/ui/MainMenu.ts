@@ -42,14 +42,24 @@ export class MainMenu {
   private charIndex = 0;
   private readonly charName: TextField;
   private readonly charTagline: TextField;
+  /** Mobile: "index / total" readout shown in the top-left of the panel. */
+  private readonly charCount: TextField;
+  /** Suppress the scroll-sync override while an arrow-triggered snap is animating. */
+  private suppressCharSync = false;
+  private charSyncReset = 0;
 
   // Track select
   private readonly trackCards: HTMLElement[] = [];
   private readonly trackGrid: HTMLElement;
   private trackIndex = 0;
+  /** Suppress the scroll-sync override while an arrow-triggered snap is animating. */
+  private suppressTrackSync = false;
+  private trackSyncReset = 0;
   private readonly diffButtons: HTMLElement[] = [];
   private difficultyIndex = 1;
   private readonly diffBlurb: TextField;
+  /** Mobile: "index / total" readout shown in the top-left of the panel. */
+  private readonly trackCount: TextField;
   private readonly startButton: HTMLElement;
   /** 0 = track cards row, 1 = difficulty row, 2 = start button. */
   private trackRow = 0;
@@ -122,6 +132,7 @@ export class MainMenu {
       },
       { passive: true },
     );
+    this.charCount = new TextField(el('div', 'select-count', '', chars));
     const charFoot = el('footer', 'select-footer glass', undefined, chars);
     const charInfo = el('div', 'select-info', undefined, charFoot);
     this.charName = new TextField(el('div', 'select-info-name', '', charInfo));
@@ -165,6 +176,7 @@ export class MainMenu {
       },
       { passive: true },
     );
+    this.trackCount = new TextField(el('div', 'select-count', '', tr));
     // Mobile: left/right arrow buttons to step between tracks.
     tr.appendChild(button('‹', 'char-nav char-nav-prev', () => this.stepTrack(-1)));
     tr.appendChild(button('›', 'char-nav char-nav-next', () => this.stepTrack(1)));
@@ -315,6 +327,7 @@ export class MainMenu {
     const def = this.characters[i];
     this.charName.set(def.name.toUpperCase());
     this.charTagline.set(def.tagline);
+    this.charCount.set(`${i + 1} / ${this.characters.length}`);
     if (changed) {
       if (sound) events.emit('ui:move', {});
       this.onHighlight?.(def.id);
@@ -323,7 +336,7 @@ export class MainMenu {
 
   /** Mobile carousel: snap to whichever card is nearest the horizontal centre. */
   private syncCharFromScroll(): void {
-    if (this.charCards.length === 0) return;
+    if (this.suppressCharSync || this.charCards.length === 0) return;
     const rect = this.charGrid.getBoundingClientRect();
     const centre = rect.left + rect.width / 2;
     let best = this.charIndex;
@@ -345,7 +358,13 @@ export class MainMenu {
     if (n === 0) return;
     const next = (this.charIndex + dir + n) % n;
     this.setCharacter(next, true);
+    this.suppressCharSync = true;
     this.charCards[next]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    window.clearTimeout(this.charSyncReset);
+    this.charSyncReset = window.setTimeout(() => {
+      this.suppressCharSync = false;
+      this.syncCharFromScroll();
+    }, 450);
   }
 
   private setTrack(i: number, sound = false): void {
@@ -353,13 +372,14 @@ export class MainMenu {
     const changed = i !== this.trackIndex;
     this.trackIndex = i;
     this.trackCards.forEach((c, k) => c.classList.toggle('selected', k === i));
+    this.trackCount.set(`${i + 1} / ${this.tracks.length}`);
     this.refreshTrackFocus();
     if (changed && sound) events.emit('ui:move', {});
   }
 
   /** Mobile carousel: snap to whichever track card is nearest the horizontal centre. */
   private syncTrackFromScroll(): void {
-    if (this.trackCards.length === 0) return;
+    if (this.suppressTrackSync || this.trackCards.length === 0) return;
     const rect = this.trackGrid.getBoundingClientRect();
     const centre = rect.left + rect.width / 2;
     let best = this.trackIndex;
@@ -382,7 +402,13 @@ export class MainMenu {
     const next = (this.trackIndex + dir + n) % n;
     this.trackRow = 0;
     this.setTrack(next, true);
+    this.suppressTrackSync = true;
     this.trackCards[next]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    window.clearTimeout(this.trackSyncReset);
+    this.trackSyncReset = window.setTimeout(() => {
+      this.suppressTrackSync = false;
+      this.syncTrackFromScroll();
+    }, 450);
   }
 
   private setDifficulty(i: number, sound = false): void {
@@ -430,10 +456,11 @@ export class MainMenu {
     el('div', 'char-wheel char-wheel-l', undefined, swatch);
     el('div', 'char-wheel char-wheel-r', undefined, swatch);
     const info = el('div', 'char-info', undefined, card);
-    el('div', 'card-name', c.name.toUpperCase(), info);
-    el('div', 'card-tag', c.tagline, info);
-    const pill = el('div', `pill weight-${c.weightClass}`, WEIGHT_LABEL[c.weightClass], info);
+    const nameRow = el('div', 'char-name-row', undefined, info);
+    el('div', 'card-name', c.name.toUpperCase(), nameRow);
+    const pill = el('div', `pill weight-${c.weightClass}`, WEIGHT_LABEL[c.weightClass], nameRow);
     pill.title = '重量级别';
+    el('div', 'card-tag', c.tagline, info);
     const stats = el('div', 'stats', undefined, info);
     for (const s of STAT_KEYS) {
       const row = el('div', 'stat', undefined, stats);

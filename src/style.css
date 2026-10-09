@@ -548,6 +548,11 @@ kbd {
   font-size: clamp(28px, 3.8vw, 50px);
 }
 
+/* Mobile "index / total" counter, revealed only on touch and pinned top-left. */
+.select-count {
+  display: none;
+}
+
 .card-grid {
   pointer-events: auto;
   display: grid;
@@ -714,6 +719,20 @@ kbd {
   text-transform: uppercase;
   margin-top: 8px;
   text-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* Character name with its weight-class badge inline, so the card keeps stats
+   visible without blocking room on the info column. */
+.char-name-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.char-name-row .card-name {
+  margin-top: 0;
 }
 
 .card-tag {
@@ -2224,6 +2243,21 @@ body {
   align-items: center;
 }
 
+.touch .select-count {
+  display: block;
+  align-self: center;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-family: var(--display);
+  font-size: clamp(14px, 3vw, 18px);
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  background: rgba(16, 17, 38, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: var(--glass-shadow);
+  pointer-events: none;
+}
+
 .touch .panel-chars .card-grid {
   display: flex;
   flex-direction: row;
@@ -2346,12 +2380,13 @@ body {
 
 .touch .panel-tracks .select-header {
   position: static;
-  align-self: stretch;
+  align-self: center;
+  width: min(88%, 860px);
 }
 
 .touch .panel-tracks .card-grid {
   flex: 1;
-  width: min(84%, 900px);
+  width: min(88%, 860px);
   margin: 0 auto;
   min-height: 0;
   display: flex;
@@ -2404,8 +2439,32 @@ body {
   white-space: normal;
 }
 
+/* One-row footer on mobile (mirrors character select): back · difficulty · start. */
 .touch .panel-tracks .select-footer {
-  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  width: min(88%, 860px);
+}
+
+.touch .panel-tracks .select-footer .actions {
+  display: contents;
+}
+
+.touch .panel-tracks .select-footer .difficulty {
+  order: 2;
+  flex: 1;
+  min-width: 0;
+  justify-content: center;
+}
+
+.touch .panel-tracks .select-footer .actions .btn:first-child {
+  order: 1;
+}
+
+.touch .panel-tracks .select-footer .actions .btn:last-child {
+  order: 3;
 }
 
 /* Force landscape on touch devices held in portrait: rotate the whole app 90°
