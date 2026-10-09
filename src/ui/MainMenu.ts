@@ -359,12 +359,22 @@ export class MainMenu {
     const next = (this.charIndex + dir + n) % n;
     this.setCharacter(next, true);
     this.suppressCharSync = true;
-    this.charCards[next]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    const card = this.charCards[next];
+    const gridRect = this.charGrid.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    const target = this.charGrid.scrollLeft + (cardRect.left - gridRect.left) - (gridRect.width - cardRect.width) / 2;
+    // Disable snap while scrolling so the programmatic scroll lands exactly on the target.
+    this.charGrid.style.scrollSnapType = 'none';
+    this.charGrid.scrollTo({ left: target, behavior: 'smooth' });
     window.clearTimeout(this.charSyncReset);
     this.charSyncReset = window.setTimeout(() => {
+      this.charGrid.style.scrollSnapType = 'x mandatory';
+      if (Math.abs(this.charGrid.scrollLeft - target) > 1) {
+        this.charGrid.scrollTo({ left: target, behavior: 'auto' });
+      }
       this.suppressCharSync = false;
       this.syncCharFromScroll();
-    }, 450);
+    }, 600);
   }
 
   private setTrack(i: number, sound = false): void {
@@ -403,12 +413,22 @@ export class MainMenu {
     this.trackRow = 0;
     this.setTrack(next, true);
     this.suppressTrackSync = true;
-    this.trackCards[next]?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    const card = this.trackCards[next];
+    const gridRect = this.trackGrid.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    const target = this.trackGrid.scrollLeft + (cardRect.left - gridRect.left) - (gridRect.width - cardRect.width) / 2;
+    // Disable snap while scrolling so the programmatic scroll lands exactly on the target.
+    this.trackGrid.style.scrollSnapType = 'none';
+    this.trackGrid.scrollTo({ left: target, behavior: 'smooth' });
     window.clearTimeout(this.trackSyncReset);
     this.trackSyncReset = window.setTimeout(() => {
+      this.trackGrid.style.scrollSnapType = 'x mandatory';
+      if (Math.abs(this.trackGrid.scrollLeft - target) > 1) {
+        this.trackGrid.scrollTo({ left: target, behavior: 'auto' });
+      }
       this.suppressTrackSync = false;
       this.syncTrackFromScroll();
-    }, 450);
+    }, 600);
   }
 
   private setDifficulty(i: number, sound = false): void {
