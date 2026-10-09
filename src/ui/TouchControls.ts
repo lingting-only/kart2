@@ -60,7 +60,10 @@ export class TouchControls {
 
   constructor(root: HTMLElement) {
     this.active = hasTouch();
-    if (this.active) document.documentElement.classList.add('touch');
+    if (this.active) {
+      document.documentElement.classList.add('touch');
+      this.requestFullscreenOnFirstGesture();
+    }
 
     this.rootNode = el('div', 'touch-controls', undefined, root);
 
@@ -170,6 +173,23 @@ export class TouchControls {
 
   // ---------------------------------------------------------------------------
 
+  private requestFullscreenOnFirstGesture(): void {
+    const go = (): void => {
+      const doc = document as Document & { webkitFullscreenElement?: unknown };
+      if (document.fullscreenElement || doc.webkitFullscreenElement) return;
+      const request = document.documentElement.requestFullscreen;
+      if (typeof request !== 'function') return;
+      try {
+        const result = request.call(document.documentElement) as unknown as Promise<void> | undefined;
+        if (result && typeof result.catch === 'function') result.catch(() => {});
+      } catch {
+        /* ignore */
+      }
+    };
+    // Fullscreen needs a user gesture, so request it on the first press/tap.
+    window.addEventListener('pointerdown', go, { once: true, passive: true });
+  }
+
   private bindHold(
     node: HTMLElement,
     onDown: () => void,
@@ -200,7 +220,13 @@ export class TouchControls {
   private bindThrottle(): void {
     const apply = (e: PointerEvent): void => {
       const rect = this.throttleNode.getBoundingClientRect();
-      const t = clamp01(1 - (e.clientY - rect.top) / Math.max(1, rect.height));
+      // In portrait the app is rotated 90°, so the vertical slider spans the
+      // screen's horizontal axis there. Measure along whichever axis the slider
+      // actually occupies; "full throttle" = top when vertical, right when rotated.
+      const t =
+        rect.height >= rect.width
+          ? clamp01(1 - (e.clientY - rect.top) / Math.max(1, rect.height))
+          : clamp01((e.clientX - rect.left) / Math.max(1, rect.width));
       this.state.throttle = t;
       this.syncThrottleUI();
     };

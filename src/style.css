@@ -2070,7 +2070,7 @@ body {
    thumb — drag down to slow down, drag up to accelerate; value latches on release. */
 .throttle-slider {
   left: 20px;
-  bottom: 20px;
+  bottom: 32px;
   width: 64px;
   height: 170px;
   background: transparent;
@@ -2143,7 +2143,7 @@ body {
 
 /* Brake / item / look-back cluster (bottom-right) */
 .tc-brake {
-  right: 90px;
+  right: 30px;
   bottom: 96px;
   width: 66px;
   height: 66px;
@@ -2151,7 +2151,7 @@ body {
 }
 
 .tc-item {
-  right: 166px;
+  right: 116px;
   bottom: 106px;
   width: 60px;
   height: 60px;
@@ -2159,11 +2159,11 @@ body {
 }
 
 .tc-lookback {
-  right: 96px;
-  bottom: 166px;
-  width: 48px;
-  height: 48px;
-  font-size: 14px;
+  right: 46px;
+  bottom: 176px;
+  width: 60px;
+  height: 60px;
+  font-size: 16px;
   border-radius: 12px;
 }
 
